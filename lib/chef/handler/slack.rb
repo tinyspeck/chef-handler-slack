@@ -25,41 +25,62 @@ require "net/http"
 require "uri"
 require "json"
 
-class SlackReporting < Chef::Handler::Slack
-  attr_accessor :source, :team, :icon_emoj, :channel, :token, :username
+class Chef
+  class Handler
+    class SlackReporting < Chef::Handler
+      attr_accessor :source, :team, :icon_emoj, :channel, :token, :username, :icon_emoj
 
-  def initialize(options = {})
-    @source = options[:source] || "#{Chef::Config[:node_name]}"
-    @channel = options[:channel] || "#test"
-    @api_key = options[:token] || "token"
-    @team = options[:team] || "doesnotexist"
-    @username = options[:username] || "chef"
-  end
+      def initialize(options = {})
+        @source = options[:source] || "#{Chef::Config[:node_name]}"
+        @channel = options[:channel] || "#test"
+        @token = options[:token] || "token"
+        @team = options[:team] || "doesnotexist"
+        @username = options[:username] || "chef"
+        @icon_emoj = options[:icon_emoj] || ":chef:"
+      end
 
-  def report
-    gemspec = if Gem::Specification.respond_to? :find_by_name
-                Gem::Specification.find_by_name('chef-handler-slack')
-              else
-                Gem.source_index.find_name('chef-handler-slack').last
-              end
+      def report
+        gemspec = if Gem::Specification.respond_to? :find_by_name
+                    Gem::Specification.find_by_name('chef-handler-slack')
+                  else
+                    Gem.source_index.find_name('chef-handler-slack').last
+                  end
 
-    Chef::Log.debug("#{gemspec.full_name} loaded as a handler.")
+        Chef::Log.debug("#{gemspec.full_name} loaded as a handler.")
 
-    params = {
-      :username => @username,
-      :icon_emoji => @icon_emoj,
-      :channel => @channel,
-      :text => "HELLO",
-    }
+        if not run_status.success?
+          msg = "Chef run failed on *#{source}*"
+          if !run_status.exception.nil?
+            msg += ":\n```"
+            msg += run_status.formatted_exception.encode('UTF-8', {:invalid => :replace, :undef => :replace, :replace => '?'})
+            msg += '```'
+          end
 
-    begin
-      http = Net::HTTP.new
-      uri = URI.parse("https://#{@team}.slack.com/services/hooks/incoming-webhook?token=#{@token}")
-      req = Net::HTTP::Post.new(uri)
-      req.set_form_data(params)
-      http.request(req)
-    rescue Exception => e
-      puts "#{e}"
+          send(msg)
+        end
+      end
+
+      def send(msg)
+        params = {
+          :username => @username,
+          :icon_emoji => @icon_emoj,
+          :channel => @channel,
+          :text => msg,
+          :token => @token,
+        }
+
+        uri = URI("https://#{@team}.slack.com/services/hooks/incoming-webhook?token=#{@token}")
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+
+        begin
+          req = Net::HTTP::Post.new("#{uri.path}?#{uri.query}")
+          req.set_form_data({:payload => params.to_json})
+          http.request(req).body
+        rescue Exception => e
+          Chef::Log.warn("An unhandled execption occured while posting a message to Slack: #{e}")
+        end
+      end
     end
   end
 end

@@ -18,6 +18,5 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "rake"
-
-  s.add_runtime_dependency "chef"
+  s.add_development_dependency "chef"
 end
