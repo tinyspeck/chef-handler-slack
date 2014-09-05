@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.description   = %q{Chef reports generated to a channel in Slack}
   s.license       = "MIT"
 
-  s.files         = `git ls-files -z`.split("\x0")
-  s.require_paths = ["lib"]
+  s.files         =  %w(LICENSE README.md) + Dir.glob('lib/**/*')
+  s.require_path  = "lib"
 
   s.add_development_dependency "bundler", "~> 1.6"
   s.add_development_dependency "rake"
