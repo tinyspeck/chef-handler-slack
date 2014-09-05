@@ -25,7 +25,7 @@ require "net/http"
 require "uri"
 require "json"
 
-class SlackReporting < Chef::Handler
+class SlackReporting < Chef::Handler::Slack
   attr_accessor :source, :team, :icon_emoj, :channel, :token, :username
 
   def initialize(options = {})
