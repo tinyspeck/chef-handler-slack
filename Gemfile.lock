@@ -95,6 +95,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bundler (~> 1.6)
   chef
   chef-handler-slack!
   rake
