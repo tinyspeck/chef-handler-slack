@@ -1,7 +1,7 @@
 # Chef::Handler::SlackReporting
 
 #### Build Status
-[![Build Status](https://travis-ci.org/dsmith/chef-handler-slack.png?branch=master)](https://travis-ci.org/dsmith/chef-handler-slack)
+[![Build Status](https://travis-ci.org/tinyspeck/chef-handler-slack.png?branch=master)](https://travis-ci.org/tinyspeck/chef-handler-slack)
 
 The chef-handler-slack gem is a Chef report mechanism that sends
 failures to a Slack channel.
