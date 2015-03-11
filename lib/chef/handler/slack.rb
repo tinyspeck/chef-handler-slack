@@ -48,7 +48,10 @@ class Chef
 
         Chef::Log.debug("#{gemspec.full_name} loaded as a handler.")
 
-        if not run_status.success?
+        if run_status.success?
+          msg = "Chef run Success on *#{source}*"
+          send(msg)
+        else
           msg = "Chef run failed on *#{source}*"
           if !run_status.exception.nil?
             msg += ":\n```"
