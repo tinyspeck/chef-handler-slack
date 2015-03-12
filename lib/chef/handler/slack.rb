@@ -37,6 +37,7 @@ class Chef
         @team = options[:team] || "doesnotexist"
         @username = options[:username] || "chef"
         @icon_emoj = options[:icon_emoj] || ":chef:"
+        @send_at_success = options[:send_at_success] || false
       end
 
       def report
@@ -48,7 +49,10 @@ class Chef
 
         Chef::Log.debug("#{gemspec.full_name} loaded as a handler.")
 
-        if not run_status.success?
+        if run_status.success?
+          msg = "Chef run Success on *#{source}*"
+          send(msg) if @send_at_success
+        else
           msg = "Chef run failed on *#{source}*"
           if !run_status.exception.nil?
             msg += ":\n```"
