@@ -1,42 +1,17 @@
 # Chef::Handler::SlackReporting
 
-The chef-handler-slack gem is a Chef report mechanism that sends
-failures to a Slack channel.
-
-## Usage
-
-Create a new recipe, with the following contents, and add it to the runlist of your base role in Chef:
+Distribute this Ruby class via a Chef `file` resource and activate it with a Chef resource to this effect:
 
 ```ruby
-chef_gem "chef-handler-slack" do
-  action :upgrade
-end
-
-require 'chef/handler/slack'
-
-chef_handler "Chef::Handler::SlackReporting" do
-  source "chef/handler/slack"
-  arguments [
-    # The name of your team registered with Slack
-    :team => "tinyspeck",
-
-    # Your incoming webhook token
-    :token => "someawesometoken",
-
-    # An existing channel
-    :channel => "#chef",
-
-    # Watever.
-    :icon_emoj => ":chef:",
-  ]
+chef_handler 'Chef::Handler::SlackReporting' do
   action :nothing
+  arguments [
+    channel_id: channel_id,
+    token: token,
+    workspace_id: workspace_id,
+  ]
+  source '/usr/local/lib/chef-handler-slack.rb'
 end.run_action(:enable)
 ```
 
-## Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/chef-handler-slack/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+This sample code is provided as-is for the benefit of the community that uses both Chef and Slack.  Since Slack made this code available we've evolved the code considerably but in ways that don't make sense to incorporate into an open-source offering.  Nonetheless, this basic starting point still applies so take it and run with it.
